@@ -66,6 +66,10 @@ public class PostgreSQL implements server{
         else if(system.equals("hive")){
             offset_to_pass=hiveoffset;
         }
+        else if(system.equals("postgresql"))
+        {
+            return;
+        }
         else 
         {
             throw new Exception("wrong system provided for merge");

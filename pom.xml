@@ -27,6 +27,7 @@
             <groupId>org.apache.hive</groupId>
             <artifactId>hive-jdbc</artifactId>
             <version>4.0.1</version>
+            <classifier>standalone</classifier>
         </dependency>
 
         <!-- MongoDB Driver -->

@@ -1,5 +1,109 @@
 package com.nosql;
+import java.sql.*;
+import java.util.ArrayList;
+import org.apache.hive.jdbc.HiveDriver;
 import com.nosql.server;
 public class Hive implements server{
+    int mongooffset=0,postgresoffset=0;
+    private String url = "jdbc:hive2://localhost:10000/default";
+    String username = "";
+    String password = "";
+    private Connection conn ;
+    private logger log;
+    public Hive() throws Exception
+    {
+        this.log = new logger("hive.log");
+        DriverManager.registerDriver(new org.apache.hive.jdbc.HiveDriver());
+        this.conn = DriverManager.getConnection(url,username,password);
+    }
+    @Override
+    public void set(String sid,String cid,String grade) throws Exception
+    {
+        PreparedStatement setstatement = conn.prepareStatement(
+            "UPDATE student_course_grades SET grade = ?, last_modified = ? WHERE studentid = ? AND courseid = ?"
+        );
+        Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
+        setstatement.setString(1, grade);
+        setstatement.setTimestamp(2, currentTimestamp); // current date and time
+        setstatement.setString(3, sid);
+        setstatement.setString(4, cid);
     
+        setstatement.executeUpdate(); // Don't forget to actually execute the query!
+        System.out.println("Data updated successfully");
+        logobj obj = new logobj("set",sid,cid,grade,currentTimestamp);
+        log.write(obj);
+    }
+    @Override 
+    public ArrayList<String> get(String sid, String cid) throws Exception
+    {
+        PreparedStatement getstatement = conn.prepareStatement(
+            "select grade,rollno,emailid from student_course_grades where studentid=? and courseid=?"
+        );
+        getstatement.setString(1, sid);
+        getstatement.setString(2, cid);
+        ResultSet rs = getstatement.executeQuery();
+        ArrayList<String> arr = new ArrayList<>();
+        rs.next();
+        arr.add(rs.getString("rollno"));
+        arr.add(rs.getString("emailid"));
+        arr.add(rs.getString("grade"));
+        logobj obj = new logobj("get",sid,cid,null,new java.sql.Timestamp(System.currentTimeMillis()));
+        log.write(obj);
+        return arr;
+    }
+    @Override
+    public void merge(String system) throws Exception
+    {
+        String filename = system+".log";
+        int offset_to_pass;
+        if(system.equals("mongo"))
+        {
+            offset_to_pass=mongooffset;
+        }
+        else if(system.equals("postgresql")){
+            offset_to_pass=postgresoffset;
+        }
+        else if(system.equals("hive"))
+        {
+            return;
+        }
+        else 
+        {
+            throw new Exception("wrong system provided for merge");
+        }
+        Pair<ArrayList<logobj>,Integer> result = log.read(filename,offset_to_pass);
+        if(system.equals("mongo"))
+        {
+            mongooffset=result.second;
+        } 
+        else
+        {
+            postgresoffset=result.second;
+        }
+        for(logobj temp:result.first)
+        {
+            String sid=temp.sid,cid=temp.cid;
+            Timestamp ts = temp.ts;
+            String grade = temp.grade;
+            PreparedStatement getstatement = conn.prepareStatement(
+                "select last_modified from student_course_grades where studentid=? and courseid=?"
+            );
+            getstatement.setString(1, sid);
+            getstatement.setString(2, cid);
+            ResultSet rs = getstatement.executeQuery();
+            rs.next();
+            if(rs.getTimestamp("last_modified").compareTo(ts)<0)
+            {
+                PreparedStatement setstatement = conn.prepareStatement(
+                    "UPDATE student_course_grades SET grade = ?, last_modified = ? WHERE studentid = ? AND courseid = ?"
+                );
+                setstatement.setString(1, grade);
+                setstatement.setTimestamp(2,ts); // current date and time
+                setstatement.setString(3, sid);
+                setstatement.setString(4, cid);
+                setstatement.executeUpdate(); // Don't forget to actually execute the query!
+            }
+        }
+    }
+
 }

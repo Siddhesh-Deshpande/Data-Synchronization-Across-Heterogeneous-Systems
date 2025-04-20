@@ -67,6 +67,10 @@ public class MongoDB implements server{
         {
             offset_to_pass=postgresoffset;
         }
+        else if(system.equals("mongo"))
+        {
+            return;
+        }
         else if(system.equals("hive")){
             offset_to_pass=hiveoffset;
         }
