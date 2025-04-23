@@ -105,8 +105,14 @@ public class PostgreSQL implements server{
                 setstatement.setString(3, sid);
                 setstatement.setString(4, cid);
                 setstatement.executeUpdate(); // Don't forget to actually execute the query!
+                logobj obj = new logobj("set", sid, cid, grade, ts);
+                this.log.write(obj);
             }
         }
     }
-    
+    @Override
+    public void close() throws Exception{
+        this.log.close();
+        this.conn.close();
+    }
 }

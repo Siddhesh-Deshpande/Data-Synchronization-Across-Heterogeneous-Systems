@@ -104,7 +104,14 @@ public class MongoDB implements server{
                         com.mongodb.client.model.Updates.set("last_modified", ts)
                     )
                 );
+                logobj obj = new logobj("set", sid, cid, grade, ts);
+                this.log.write(obj);
             }
         }
+    }
+    @Override
+    public void close() throws Exception{
+        this.log.close();
+        this.mongoClient.close();
     }
 }

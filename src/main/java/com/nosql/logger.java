@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.File;
 import java.util.ArrayList;
 import com.nosql.Pair;
 import com.nosql.logobj;
@@ -52,7 +53,9 @@ public class logger {
         reader.close();
         return new Pair<>(arr,offset);
     }
-    public void close() throws IOException {
+    public void close() throws Exception {
         writer.close();
+        File file = new File(this.mylogfile);
+        file.delete();
     }
 }

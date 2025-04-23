@@ -16,6 +16,7 @@ public class Hive implements server{
         DriverManager.registerDriver(new org.apache.hive.jdbc.HiveDriver());
         this.conn = DriverManager.getConnection(url,username,password);
     }
+
     @Override
     public void set(String sid,String cid,String grade) throws Exception
     {
@@ -27,7 +28,6 @@ public class Hive implements server{
         setstatement.setTimestamp(2, currentTimestamp); // current date and time
         setstatement.setString(3, sid);
         setstatement.setString(4, cid);
-    
         setstatement.executeUpdate(); // Don't forget to actually execute the query!
         System.out.println("Data updated successfully");
         logobj obj = new logobj("set",sid,cid,grade,currentTimestamp);
@@ -102,8 +102,14 @@ public class Hive implements server{
                 setstatement.setString(3, sid);
                 setstatement.setString(4, cid);
                 setstatement.executeUpdate(); // Don't forget to actually execute the query!
+                logobj obj = new logobj("set", sid, cid, grade, ts);
+                this.log.write(obj);
             }
         }
     }
-
+    @Override
+    public void close() throws Exception{
+        this.log.close();
+        this.conn.close();
+    }
 }

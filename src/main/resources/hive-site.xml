@@ -13,7 +13,7 @@
     </property>
     <property>
         <name>hive.compactor.worker.threads</name>
-        <value>1</value>
+        <value>2</value>
     </property>
     <property>
         <name>hive.enforce.bucketing</name>
@@ -25,7 +25,7 @@
     </property>
     <property>
     	<name>hive.metastore.warehouse.dir</name>
-    	<value>file:///home/vboxuser/nosqlproject/hive/warehouse</value>
+    	<value>file:///home/abhi/Downloads/nosql_proj/hive/warehouse</value>
     </property>
 </configuration>
 

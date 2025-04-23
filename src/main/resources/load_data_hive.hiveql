@@ -26,9 +26,17 @@ CREATE TABLE student_course_grades (
 STORED AS ORC
 LOCATION 'warehouse/student_course_grades'
 TBLPROPERTIES (
-    'transactional' = 'true'
+    'transactional' = 'true',
+    'compactor.mapreduce.map.memory.mb' = '8192',
+    'compactor.mapreduce.reduce.memory.mb' = '8192',
+    'compactor.memory.mb' = '8192',
+    'compactorthreshold.hive.compactor.delta.num.threshold' = '5', -- compact after 10 delta files
+    'hive.compactor.initiator.on' = 'true',
+    'hive.compactor.worker.threads' = '5'
 );
 
+
+ALTER TABLE student_course_grades COMPACT 'MAJOR';
 
 
 INSERT INTO TABLE student_course_grades (studentid, courseid, rollno, emailid, grade)
