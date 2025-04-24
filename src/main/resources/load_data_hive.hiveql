@@ -10,7 +10,6 @@ WITH SERDEPROPERTIES (
     "separatorChar" = ","
 )
 STORED AS TEXTFILE
-LOCATION 'mytables/student_course_grades_staged'
 TBLPROPERTIES ("skip.header.line.count"="1");
 
 load data local inpath 'student_course_grades.csv' into table student_course_grades_staged;
@@ -24,23 +23,11 @@ CREATE TABLE student_course_grades (
     last_modified TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )
 STORED AS ORC
-LOCATION 'warehouse/student_course_grades'
 TBLPROPERTIES (
-    'transactional' = 'true',
-    'compactor.mapreduce.map.memory.mb' = '8192',
-    'compactor.mapreduce.reduce.memory.mb' = '8192',
-    'compactor.memory.mb' = '8192',
-    'compactorthreshold.hive.compactor.delta.num.threshold' = '5', -- compact after 10 delta files
-    'hive.compactor.initiator.on' = 'true',
-    'hive.compactor.worker.threads' = '5'
+    'transactional' = 'true'
 );
-
-
-ALTER TABLE student_course_grades COMPACT 'MAJOR';
-
 
 INSERT INTO TABLE student_course_grades (studentid, courseid, rollno, emailid, grade)
 SELECT studentid, courseid, rollno, emailid, grade
 FROM student_course_grades_staged;
 
-DELETE FROM student_course_grades where studentid='student-ID';

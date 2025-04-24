@@ -11,6 +11,7 @@ class Executor{
         this.hive = new Hive();
         this.mongo = new MongoDB();
         this.postgre = new PostgreSQL();
+        hive.CreateTable();
     }
     public void execStmt(String line) throws Exception{
         if(line.trim().toLowerCase().equals("exit")){
