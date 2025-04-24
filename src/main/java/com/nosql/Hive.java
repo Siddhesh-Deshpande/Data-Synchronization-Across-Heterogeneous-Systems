@@ -3,6 +3,7 @@ package com.nosql;
 import java.sql.*;
 import java.util.ArrayList;
 import org.apache.hive.jdbc.HiveDriver;
+
 import com.nosql.server;
 
 public class Hive implements server {
@@ -17,9 +18,10 @@ public class Hive implements server {
         this.log = new logger("hive.log");
         DriverManager.registerDriver(new org.apache.hive.jdbc.HiveDriver());
         this.conn = DriverManager.getConnection(url, username, password);
+        CreateTable();
     }
-
-    public void CreateTable() throws Exception {
+    
+    private void CreateTable() throws Exception {
         Statement stmt1 = conn.createStatement();
         stmt1.execute("SET hive.exec.dynamic.partition = true");
         stmt1.execute("SET hive.exec.dynamic.partition.mode = nonstrict");
@@ -157,10 +159,10 @@ public class Hive implements server {
                 PreparedStatement setstatement = conn.prepareStatement(
                         "UPDATE student_course_grades SET grade = ?, last_modified = ? WHERE studentid = ? AND courseid = ?");
                 setstatement.setString(1, grade);
-                setstatement.setTimestamp(2, ts); // current date and time
+                setstatement.setTimestamp(2, ts); 
                 setstatement.setString(3, sid);
                 setstatement.setString(4, cid);
-                setstatement.executeUpdate(); // Don't forget to actually execute the query!
+                setstatement.executeUpdate(); 
                 logobj obj = new logobj("set", sid, cid, grade, ts);
                 this.log.write(obj);
             }

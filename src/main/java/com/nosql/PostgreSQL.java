@@ -7,7 +7,6 @@ import org.postgresql.Driver;
 
 public class PostgreSQL implements server{
     private int mongooffset=0,hiveoffset=0;
-    // private String url = "jdbc:postgresql://localhost:5432/nosqlprojectdb";
     private String url = "jdbc:postgresql://localhost:5432/testdb";
     private String user = "postgres";
     private String password = "1234";
@@ -27,12 +26,12 @@ public class PostgreSQL implements server{
         );
         Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
         setstatement.setString(1, grade);
-        setstatement.setTimestamp(2, currentTimestamp); // current date and time
+        setstatement.setTimestamp(2, currentTimestamp); 
         setstatement.setString(3, sid);
         setstatement.setString(4, cid);
     
-        setstatement.executeUpdate(); // Don't forget to actually execute the query!
-        System.out.println("Data updated successfully");
+        setstatement.executeUpdate(); 
+        System.out.println("Data updated successfully in POSTGRESQL");
         logobj obj = new logobj("set",sid,cid,grade,currentTimestamp);
         log.write(obj);
     }
@@ -101,11 +100,11 @@ public class PostgreSQL implements server{
                     "UPDATE student_course_grades SET grade = ?, last_modified = ? WHERE studentid = ? AND courseid = ?"
                 );
                 setstatement.setString(1, grade);
-                setstatement.setTimestamp(2,ts); // current date and time
+                setstatement.setTimestamp(2,ts); 
                 setstatement.setString(3, sid);
                 setstatement.setString(4, cid);
-                setstatement.executeUpdate(); // Don't forget to actually execute the query!
-                logobj obj = new logobj("set", sid, cid, grade, ts);
+                setstatement.executeUpdate(); 
+                logobj obj = new logobj("set", sid, cid, grade, ts);// we need to add merge as a kind of set statement in log so that other system when merge with this is consistent.
                 this.log.write(obj);
             }
         }
