@@ -74,6 +74,7 @@ class Executor{
         String line;
         while((line = fd.readLine()) != null){
             String inp = line.trim();
+            System.out.println("\n>>> " + inp + "\n");
             this.execStmt(inp);
             if(inp.trim().toLowerCase().equals("exit")){
                 break;
