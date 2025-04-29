@@ -3,10 +3,12 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.File;
 class Executor{
     public Hive hive;
     public PostgreSQL postgre;
     public MongoDB mongo;
+    public boolean isexited = false;
     public Executor() throws Exception{
         this.hive = new Hive();
         this.mongo = new MongoDB();
@@ -64,6 +66,7 @@ class Executor{
             String inp = stdin.nextLine().trim();
             this.execStmt(inp);
             if(inp.trim().toLowerCase().equals("exit")){
+                this.isexited = true;
                 break;
             }
         }
@@ -77,6 +80,7 @@ class Executor{
             System.out.println("\n>>> " + inp + "\n");
             this.execStmt(inp);
             if(inp.trim().toLowerCase().equals("exit")){
+                this.isexited = true;
                 break;
             }
         }
@@ -86,6 +90,14 @@ class Executor{
         this.hive.close();
         this.mongo.close();
         this.postgre.close();
+        if(this.isexited){
+            File file1 = new File("hive.log");
+            file1.delete();
+            File file2 = new File("mongo.log");
+            file2.delete();
+            File file3 = new File("postgresql.log");
+            file3.delete();
+        }
     }
 }
 public class Main {
