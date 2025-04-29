@@ -55,7 +55,7 @@ public class logger {
     }
     public void close() throws Exception {
         writer.close();
-        File file = new File(this.mylogfile);
-        file.delete();
+        // File file = new File(this.mylogfile);
+        // file.delete();
     }
 }
